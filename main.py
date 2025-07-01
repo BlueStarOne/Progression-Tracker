@@ -42,6 +42,17 @@ def slash_command():
   with open(filename, "w", encoding="utf-8") as file:
     json.dump(var, file, indent=2)
 
+def increment(key: str, value: int, increment: bool = True):
+  filename = "variables.json"
+  with open(filename, "r", encoding="utf-8") as file:
+    var = json.load(file)
+  if increment:
+    var[key] += value
+  else :
+    var[key] -= value
+  with open(filename, "w", encoding="utf-8") as file:
+    json.dump(var, file, indent=2)
+
 def is_owner(interaction: discord.Interaction) -> bool:
     return interaction.user.id in slash_commands_allowed_users
 
@@ -55,9 +66,16 @@ update_config("overdrive_status", False)
 @bot.event
 async def on_ready():
   db.log(f"Logged in as {bot.user} (ID: {bot.user.id})")
-  
   bot.loop.create_task(status_rotation.rotate_status(bot))
- 
+
+@bot.event
+async def on_guild_join(guild):
+  increment("servers_joined", 1)
+
+@bot.event
+async def on_guild_remove(guild):
+  increment("servers_joined", 1, False)
+
 # PREFIX COMMANDS -------------------------
 
 @bot.command()
@@ -193,6 +211,7 @@ class ProgressionModal3(discord.ui.Modal, title="Progression 3/3"):
           color=0x134fd3)
         slash_command()
         await interaction.response.edit_message(embed=embed, view=None)
+        increment("users_in_database", 1)
 
 
 class progression_embed_three(discord.ui.View):
@@ -244,7 +263,7 @@ class ProgressionModal2(discord.ui.Modal, title="Progression 2/3"):
                     f"User: <@{interaction.user.id}> ({interaction.user.id})\n"
                     f"BBR2 Username: {db.fetch_column_by_value("discord_id", interaction.discord.id, "bbr2_username")}\n"
                     f"Server: {interaction.guild.name}\n"
-                    f"Channel: <#{interaction.channel.id}>\n"
+                    f"Channel: <#{interaction.channel.id}> ({interaction.channel.id})\n"
                     f"Date: <t:{int(interaction.created_at.timestamp())}:d> <t:{int(interaction.created_at.timestamp())}:T>"
                 ),
                 color=discord.Color.red()
@@ -328,7 +347,7 @@ class ProgressionModal1(discord.ui.Modal, title="Progression 1/3"):
             return
 
         # Automoderation
-        if cars == read_var("cars"):
+        if level == read_var("level"):
             embed = discord.Embed(
                 title="Suspicious User Found",
                 description=(
@@ -336,7 +355,7 @@ class ProgressionModal1(discord.ui.Modal, title="Progression 1/3"):
                     f"User: <@{interaction.user.id}> ({interaction.user.id})\n"
                     f"BBR2 Username: {self.bbr2_username.value}\n"
                     f"Server: {interaction.guild.name}\n"
-                    f"Channel: <#{interaction.channel.id}>\n"
+                    f"Channel: <#{interaction.channel.id}> ({interaction.channel.id})\n"
                     f"Date: <t:{int(interaction.created_at.timestamp())}:d> <t:{int(interaction.created_at.timestamp())}:T>"
                 ),
                 color=discord.Color.red()
@@ -422,8 +441,8 @@ async def progression(interaction: discord.Interaction):
 )
 async def search_user(interaction: discord.Interaction, user: discord.User = None, bbr2: str = None):
     if interaction.user.id in slash_commands_blacklist:
-    await interaction.response.send_message("Due to previous bad behavior, you are not allowed to use this bot anymore", ephemeral=True)
-    return
+      await interaction.response.send_message("Due to previous bad behavior, you are not allowed to use this bot anymore", ephemeral=True)
+      return
     if user is None and bbr2 is None:
         await interaction.response.send_message("Please answer at least one of the fields", ephemeral=True)
         return
@@ -672,6 +691,7 @@ async def calculate(interaction: discord.Interaction, stuff: str):
   if interaction.user.id in slash_commands_blacklist:
     await interaction.response.send_message("Due to previous bad behavior, you are not allowed to use this bot anymore", ephemeral=True)
     return
+  
   if stuff == "Races win %":
     await interaction.response.send_modal(ModalRacesWin())
   elif stuff == "Tournaments win %":
@@ -947,6 +967,7 @@ class delete_data_button(discord.ui.View):
     slash_command()
     await interaction.response.edit_message(embed=embed, view=None)
     db.log(f"{interaction.user.id} requested a data deletion")
+    increment("users_in_database", 1, False)
 
 
 @bot.tree.command(name="delete-data", description="Delete your user data from the database")
@@ -970,6 +991,8 @@ async def fun(interaction: discord.Interaction):
     level_exp_list, count = db.fetch_column_values("level_exp")
     exp_list, _ = db.fetch_column_values("exp")
     total_exp = sum(level_exp_list) + sum(exp_list)
+    
+    update_config("users_in_database", count)
 
     # total time driven
     time_list, _ = db.fetch_column_values("total_time_driven")
@@ -1007,10 +1030,10 @@ async def fun(interaction: discord.Interaction):
             f"Average progression: {average_progression:.2f}%\n"
             f"Average level: {average_level:.2f}\n"
             f"Average speed: {average_speed:.2f} km/h\n\n"
-            f"Last updated on {formatted_time} UTC"
         ),
         color=0x134fd3
     )
+    embed.set_footer(text=f"Last updated on {formatted_time} UTC")
     slash_command()
     await interaction.response.send_message(embed=embed)
 
