@@ -61,5 +61,5 @@ def delete_all_users():
     print("🗑️ All user rows deleted.")
 
 # Example usage:
-delete_all_users()
+# create_table()
 # delete_all_users()  # Uncomment to clear the table

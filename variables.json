@@ -1,7 +1,7 @@
 {
   "title": "Progression Tracker: Global Variables",
   "author": "Blue",
-  "last_updated": "2025-06-24",
+  "last_updated": "2025-07-01",
   "version": "2025.05.19",
   "level": 20,
   "exp": 26400000,
@@ -34,7 +34,8 @@
   "level18": 7300000,
   "level19": 13900000,
   "level20": 26400000,
-  "slash_commands_amount": 0,
+  "level21": 26400000,
+  "slash_commands_amount": 15,
   "users_in_database": 0,
   "servers_joined": 0,
   "maintenance": false,
