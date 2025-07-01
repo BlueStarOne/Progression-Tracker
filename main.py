@@ -16,10 +16,10 @@ from keepalive import keep_alive
 
 # VARIABLES -------------------------------
 
-bot_token = "YOUR BOT TOKEN"
-slash_commands_allowed_users = [] # User ID
-slash_commands_blacklist = [] # User ID
-automod_channel_id = # Channel ID
+bot_token = os.getevn("bot_token")
+slash_commands_allowed_users = os.getenv("slash_commands_allowed_users")# User ID
+slash_commands_blacklist = os.getenv("slash_commands_blacklist") # User ID
+automod_channel_id = os.getenv("automod_channel_id") # Channel ID
 
 # FUNCTIONS -------------------------------
 
