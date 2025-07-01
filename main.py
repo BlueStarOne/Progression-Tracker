@@ -12,6 +12,7 @@ import database as db
 import status_rotation
 from datetime import datetime, timezone
 import os
+from keep alive import keep_alive
 
 # VARIABLES -------------------------------
 
@@ -67,6 +68,8 @@ update_config("overdrive_status", False)
 async def on_ready():
   db.log(f"Logged in as {bot.user} (ID: {bot.user.id})")
   bot.loop.create_task(status_rotation.rotate_status(bot))
+
+keep_alive() 
 
 @bot.event
 async def on_guild_join(guild):
