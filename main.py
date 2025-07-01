@@ -12,7 +12,7 @@ import database as db
 import status_rotation
 from datetime import datetime, timezone
 import os
-from keep alive import keep_alive
+from keepalive import keep_alive
 
 # VARIABLES -------------------------------
 
