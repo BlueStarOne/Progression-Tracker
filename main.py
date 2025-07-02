@@ -12,7 +12,6 @@ import database as db
 import status_rotation
 from datetime import datetime, timezone
 import os
-import ast
 
 # VARIABLES -------------------------------
 
