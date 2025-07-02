@@ -12,13 +12,19 @@ import database as db
 import status_rotation
 from datetime import datetime, timezone
 import os
+import ast
 from keepalive import keep_alive
 
 # VARIABLES -------------------------------
 
 bot_token = os.getenv("bot_token")
-slash_commands_allowed_users = os.getenv("slash_commands_allowed_users")# User ID
-slash_commands_blacklist = os.getenv("slash_commands_blacklist") # User ID
+
+allowed_raw = os.getenv("slash_commands_allowed_users", "[]")
+slash_commands_allowed_users = ast.literal_eval(allowed_raw)
+
+blacklist_raw = os.getenv("slash_commands_blacklist", "[]")
+slash_commands_blacklist = ast.literal_eval(blacklist_raw)
+
 automod_channel_id = os.getenv("automod_channel_id") # Channel ID
 
 # FUNCTIONS -------------------------------
