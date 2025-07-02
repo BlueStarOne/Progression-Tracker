@@ -1,6 +1,6 @@
 # Progression Tracker: Main Flow
 # Blue - 24/06/2025
-# Last update on 01/07/2025
+# Last update on 02/07/2025
 
 # IMPORTS ---------------------------------
 
@@ -13,19 +13,16 @@ import status_rotation
 from datetime import datetime, timezone
 import os
 import ast
-from keepalive import keep_alive
 
 # VARIABLES -------------------------------
 
-bot_token = os.getenv("bot_token")
+bot_token = "YOUR BOT TOKEN" 
 
-allowed_raw = os.getenv("slash_commands_allowed_users", "[]")
-slash_commands_allowed_users = ast.literal_eval(allowed_raw)
+slash_commands_allowed_users = [] # DISCORD ID
 
-blacklist_raw = os.getenv("slash_commands_blacklist", "[]")
-slash_commands_blacklist = ast.literal_eval(blacklist_raw)
+slash_commands_blacklist = [] # DISCORD ID
 
-automod_channel_id = os.getenv("automod_channel_id") # Channel ID
+automod_channel_id = # Channel ID
 
 # FUNCTIONS -------------------------------
 
@@ -74,8 +71,6 @@ update_config("overdrive_status", False)
 async def on_ready():
   db.log(f"Logged in as {bot.user} (ID: {bot.user.id})")
   bot.loop.create_task(status_rotation.rotate_status(bot))
-
-keep_alive() 
 
 @bot.event
 async def on_guild_join(guild):
